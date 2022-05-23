@@ -19,3 +19,13 @@ Docker containers which use the to-be-backuped container are automatically stopp
 Given that there are mounting operations in this script, it is recommended to run it with root privileges.
 Backups are are saved as ```tar``` compressed archive files.
 After backing up, former backups which are older than a defined amount of days will be automatically deleted.
+
+## Docker Compose update Script
+__Summary:__
+
+* Just updates your existing docker-compose setup with the newest images
+* Automatically cleans up your docker images afterwards (can be commented out)
+
+This short script was written to have a unifrom way of updating existing docker-compose setups.
+As with an update naturally its images become unnecessary to keep, the currently saved images are cleaned up via ```docker image prune```
+If this behaviours is not wanted, make sure to comment out the last line before executing the script.
