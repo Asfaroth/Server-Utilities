@@ -29,3 +29,4 @@ __Summary:__
 This short script was written to have a unifrom way of updating existing docker-compose setups.
 As with an update naturally its images become unnecessary to keep, the currently saved images are cleaned up via ```docker image prune```
 If this behaviours is not wanted, make sure to comment out the last line before executing the script.
+As this script only needs docker privileges, it is not recommended to run as root.
