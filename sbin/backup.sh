@@ -10,6 +10,13 @@ BACKUPMOUNT=/mnt/sda # Mount point of the drive
 BACKUPBASE=/mnt/sda/backups # Main backup directory
 BACKUPDIR=$BACKUPBASE/$(date +"%Y%m%d%H%M") # Directory where the backup should be saved
 
+# WARNING: In order to use the SMB remote feature, you need to install cifs-utils
+# REMOTELOCATION=//remote.smb/share # Remote SMB storage to push backups to, leave empty to disable
+REMOTEMOUNT=/mnt/smbShare # Mount point for the remote share
+REMOTEBACKUPNAME=backup # Filename to write the backup to (excl. .tar.gz)
+REMOTEUSER=user # Remote username
+REMOTEPASS="pass" # Remote password
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Init Stuff ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Initializes and checks all needed dependencies
 
@@ -69,6 +76,17 @@ tar --exclude='/var/lib/docker' -czf $BACKUPDIR/system_files/var_lib.tar.gz /var
 echo -e "\n"
 echo "Cleaning up old backups..."
 find $BACKUPBASE/* -mtime +7 -exec rm -rf {} \;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Remote ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Push all backups to the configured remote SMB share (such as a NAS)
+
+if [ ! -z "$REMOTELOCATION" ]; then
+    mount -t cifs -o username=$REMOTEUSER,password=$REMOTEPASS $REMOTELOCATION $REMOTEMOUNT
+
+    tar -czf $REMOTEMOUNT/$REMOTEBACKUPNAME.tar.gz $BACKUPBASE
+
+    umount $REMOTELOCATION
+fi
 
 if [ ! -z "$BACKUPDRIVE" ]; then
     umount $BACKUPDRIVE
